@@ -5,11 +5,14 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <json.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include <iostream>
+
+// nlohmann
+#include <json.hpp>
+#include <httplib.h>
 
 #define ASSERT(expr, msg) \
 do { \
@@ -103,6 +106,7 @@ int main (int argc, char *argv[]) {
     if (verbose) {
         std::cout << nlohmann::json(config).dump(4) << std::endl;
     }
+
     // we read the config folder hopefully
 
 

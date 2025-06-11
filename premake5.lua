@@ -14,7 +14,7 @@ project "ai_cli"
 
    files { "**.h", "src/**.cpp", "src/**.c" }
    -- includedirs { "vendor/raylib/build/raylib/include", "src/include", "vendor/json/include" }
-   includedirs { "src/include", "vendor/json/include" }
+   includedirs { "src/include", "vendor/json/include", "vendor/httplib/include" }
 
    -- links { "raylib" }
 
