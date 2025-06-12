@@ -12,6 +12,8 @@
 
 // nlohmann
 #include <json.hpp>
+// yhirose
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <httplib.h>
 
 #define ASSERT(expr, msg) \
@@ -81,13 +83,36 @@ ConfigJson parse_config_file(std::filesystem::path& cfg_path) {
 
 int main (int argc, char *argv[]) {
     bool verbose = false;
+    bool insecure_http_enabled = false;
+    std::string user_prompt = "null";
     if (argc > 1) {
         // if user wants -v or --verbose
         for (size_t i = 0; i < argc; ++i) {
             if ((strcmp(argv[i], "-v") == 0) || (strcmp(argv[i], "--verbose") == 0)) {
                 verbose = true;
             }
+            if ((strcmp(argv[i], "--insecure_http") == 0)) {
+                insecure_http_enabled = true;
+            }
+            if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "--help") == 0)) {
+                printf("Usage: %s -m \"Your prompt here\"\n", argv[0]);
+            }
+            if ((strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "--message") == 0)) {
+                if (argc <= i) {
+                    printf("Attempted to send message but there was no argument provided:\n");
+                    printf("Usage: %s -m \"Your prompt here\"\n", argv[0]);
+                } else {
+                    user_prompt = argv[i+1];
+                }
+            }
+
+
         }
+    }
+
+    if (strcmp("null", user_prompt.c_str()) == 0) {
+        printf("A user prompt wasn't found, did you forget to add one? Check %s -h\n", argv[0]);
+        return 1;
     }
     const char* config_path = (const char *)secure_getenv("XDG_CONFIG_HOME");
     if (verbose) {
@@ -108,6 +133,54 @@ int main (int argc, char *argv[]) {
     }
 
     // we read the config folder hopefully
+    if (insecure_http_enabled) {
+
+    }
+
+    httplib::Client client(config.api_base_url);
+    client.set_default_headers({
+        { "Authorization", "Bearer " + config.api_key },
+        { "Content-Type", "application/json" }
+    });
+
+    if (verbose) {
+        printf("Set default http headers with api key\n");
+    }
+
+    nlohmann::json request = {
+        { "model", config.models[0]},
+        { "messages", {
+            {{ "role", "system"}, {"content", "You are a helpful assistant"}},
+            {{ "role", "user"}, {"content", user_prompt}},
+        }},
+        { "stream", false }
+    };
+
+    if (verbose) {
+        printf("Sending AI api request (%s)\n", (config.api_base_url + "/v1/chat/completions").c_str());
+    }
+
+    if (httplib::Result result = client.Post("/v1/chat/completions", request.dump(), "application/json")) {
+        if (verbose) {
+            printf("AI request sent, awaiting HTTP status code and payload\n");
+        }
+        if (result->status >= 200 && result->status < 300) {
+            if (verbose) {
+                printf("AI request succeeded, printing model output!\n");
+            }
+            nlohmann::basic_json response = nlohmann::json::parse(result->body);
+            printf("%s\n", response["choices"][0]["message"]["content"].get<std::string>().c_str());
+
+            if (verbose) {
+                std::cout << response.dump() << std::endl;
+            }
+        } else {
+            if (verbose) {
+                printf("Request returned a status code that is < 200 or >= 300\n");
+            }
+            printf("HTTP error: %s (status code: %d)\n", httplib::to_string(result.error()).c_str(), result->status);
+        }
+    }
 
 
     return 0;

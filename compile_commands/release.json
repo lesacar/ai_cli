@@ -1,0 +1,13 @@
+[
+          {
+            "directory": "/home/duje/prog/ai_cli",
+            "file": "/home/duje/prog/ai_cli/src/helper.cpp",
+            "command": "cc -MD -MP -DNDEBUG -I/home/duje/prog/ai_cli/src/include -I/home/duje/prog/ai_cli/vendor/json/include -I/home/duje/prog/ai_cli/vendor/httplib/include -I/home/duje/prog/ai_cli/vendor/openssl/include -O2 -o /home/duje/prog/ai_cli/obj/Release/helper.o -MF /home/duje/prog/ai_cli/obj/Release/helper.d -c /home/duje/prog/ai_cli/src/helper.cpp"
+          }
+,
+          {
+            "directory": "/home/duje/prog/ai_cli",
+            "file": "/home/duje/prog/ai_cli/src/main.cpp",
+            "command": "cc -MD -MP -DNDEBUG -I/home/duje/prog/ai_cli/src/include -I/home/duje/prog/ai_cli/vendor/json/include -I/home/duje/prog/ai_cli/vendor/httplib/include -I/home/duje/prog/ai_cli/vendor/openssl/include -O2 -o /home/duje/prog/ai_cli/obj/Release/main.o -MF /home/duje/prog/ai_cli/obj/Release/main.d -c /home/duje/prog/ai_cli/src/main.cpp"
+          }
+]

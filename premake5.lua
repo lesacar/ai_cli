@@ -14,7 +14,7 @@ project "ai_cli"
 
    files { "**.h", "src/**.cpp", "src/**.c" }
    -- includedirs { "vendor/raylib/build/raylib/include", "src/include", "vendor/json/include" }
-   includedirs { "src/include", "vendor/json/include", "vendor/httplib/include" }
+   includedirs { "src/include", "vendor/json/include", "vendor/httplib/include", "vendor/openssl/include" }
 
    -- links { "raylib" }
 
@@ -24,10 +24,13 @@ project "ai_cli"
       ignoredefaultlibraries { "MSVCRT", "MSVCRTD"}
       -- VERY IMPORTANT WITHOUT THIS YOU WILL NEVER COMPILE AND GET 5 MILLION LINKER ERRORS
       linkoptions { "-Xlinker /NODEFAULTLIB:libcmt" }
+      -- TODO: add openssl
       links { "winmm", "shell32", "user32", "gdi32"}
 
    filter "system:linux"
       -- libdirs { "vendor/raylib/build-linux/raylib"}
+      libdirs { "vendor/openssl"}
+      links { "ssl", "crypto" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }
